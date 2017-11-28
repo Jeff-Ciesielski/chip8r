@@ -1,0 +1,8 @@
+[package]
+name = "chip8r"
+version = "0.1.0"
+authors = ["Jeff <jeffciesielski@gmail.com>"]
+
+[dependencies]
+
+rand = "0.3.16"
