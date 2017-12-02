@@ -2,8 +2,8 @@ extern crate rand;
 
 use chip8::rand::Rng;
 
-const SCREEN_X: usize = 64;
-const SCREEN_Y: usize = 32;
+pub const SCREEN_X: usize = 64;
+pub const SCREEN_Y: usize = 32;
 const CHAR_SPRITES: [u8; 80] = [0xf0, 0x90, 0x90, 0x90, 0xf0,
                                 0x20, 0x60, 0x20, 0x20, 0x70,
                                 0xf0, 0x10, 0xf0, 0x80, 0xf0,
@@ -23,7 +23,7 @@ const CHAR_SPRITES: [u8; 80] = [0xf0, 0x90, 0x90, 0x90, 0xf0,
 
 
 pub struct Core {
-    frame_buffer: [u8; (SCREEN_X / 8) * SCREEN_Y],
+    pub frame_buffer: [u8; (SCREEN_X / 8) * SCREEN_Y],
     memory: [u8; 0x1000],
     registers: [u8; 0x10],
     stack: [u16; 0x10],
