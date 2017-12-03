@@ -55,7 +55,6 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-
     let window = video_subsystem.window("CHIP_8 Emulator",
                                         SCREEN_WIDTH as u32,
                                         SCREEN_HEIGHT as u32)

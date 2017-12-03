@@ -385,7 +385,6 @@ impl Core {
         loop {}
     }
 
-
     fn execute(&mut self, inst: u16) {
         let n0 = (inst & 0xf) as u8;
         let n1 = (inst >> 4) as u8 & 0xf;
