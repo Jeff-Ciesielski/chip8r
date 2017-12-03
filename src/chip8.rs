@@ -255,7 +255,7 @@ impl Core {
             let y_idx = (y as u16 + offset) as usize;;
             let sprite_byte = self.memory[(self.i + offset) as usize];
             let mask = (0xff >> remainder_bits) as u8;
-            let idx = (SCREEN_Y) * cur_idx + y_idx;
+            let idx = (SCREEN_Y) * (cur_idx % (SCREEN_X / 8)) + (y_idx % SCREEN_Y);
 
             if self.frame_buffer[idx] & mask > 0 {
                 self.registers[0xf] = self.registers[0xf] | 0x1;
@@ -273,7 +273,7 @@ impl Core {
                 };
 
                 let ovf_mask = 0xff << remainder_bits;
-                let idx = (SCREEN_Y) * ovf_idx + y_idx;
+                let idx = (SCREEN_Y) * (ovf_idx % (SCREEN_X / 8)) + (y_idx % SCREEN_Y);
 
                 if (self.frame_buffer[idx] & ovf_mask) > 0 {
                     self.registers[0xf] = self.registers[0xf] | 0x1;
