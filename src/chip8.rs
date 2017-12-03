@@ -432,7 +432,7 @@ impl Core {
 
     fn fetch(&mut self) -> u16 {
         let result: u16 = (self.memory[self.pc as usize] as u16) << 8 | self.memory[self.pc as usize + 1] as u16;
-        println!("Fetch[0x{:x}]: 0x{:x}", self.pc, result);
+        println!("Fetch[0x{:04x}]: 0x{:04x}",  self.pc, result);
 
         self.pc += 2;
         result
