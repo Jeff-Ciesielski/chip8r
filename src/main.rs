@@ -16,6 +16,7 @@ use std::process;
 const SCREEN_WIDTH: usize = 1280;
 const SCREEN_HEIGHT: usize = 640;
 const SCALING_FACTOR: usize = SCREEN_WIDTH / chip8::SCREEN_X;
+const CORE_FREQ: u64 = 840;
 
 fn draw_frame_buffer(canvas: &mut Canvas<sdl2::video::Window>, pixels: [u8; 256]) {
     for x in 0..(chip8::SCREEN_X / 8) {
@@ -80,7 +81,8 @@ fn main() {
                 _ => {}
             }
         }
-        //::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+        ::std::thread::sleep(Duration::from_millis(1000/CORE_FREQ));
+
         // The rest of the game loop goes here...
         core.tick();
         canvas.set_draw_color(Color::RGB(0, 0, 0));
