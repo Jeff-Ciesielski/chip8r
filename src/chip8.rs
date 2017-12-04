@@ -203,7 +203,8 @@ impl Core {
             self.registers[0xf] = 0;
         }
 
-        self.registers[rx] = self.registers[rx] - self.registers[ry];
+        self.registers[rx] = self.registers[rx]
+            .wrapping_sub(self.registers[ry]);
     }
 
     fn op_shl(&mut self, inst: u16) {
