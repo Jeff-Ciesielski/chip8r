@@ -74,40 +74,46 @@ impl Core {
     }
 
     fn op_ret(&mut self, _inst: u16) {
+        println!("ret");
         self.pc = self.stack[self.sp as usize];
         self.sp -= 1;
     }
 
     fn op_jp(&mut self, inst: u16) {
+        println!("jp");
         let tgt_addr = inst & 0xfff;
         self.pc = tgt_addr;
     }
 
     fn op_call(&mut self, inst: u16) {
+        println!("call");
         self.sp += 1;
         self.stack[self.sp as usize] = self.pc;
         self.pc = inst & 0xfff;
     }
 
     fn op_se(&mut self, inst: u16) {
+        println!("se");
         let rx = ((inst & 0xf00) >> 8) as usize;
-        let comp = inst & 0xff;
+        let comp = (inst & 0xff) as u8;
 
-        if self.registers[rx] == comp as u8 {
+        if self.registers[rx] == comp {
             self.pc += 2;
         }
     }
 
     fn op_sne(&mut self, inst: u16) {
+        println!("sne");
         let rx = ((inst & 0xf00) >> 8) as usize;
-        let comp = inst & 0xff;
+        let comp = (inst & 0xff) as u8;
 
-        if self.registers[rx] != comp as u8 {
+        if self.registers[rx] != comp {
             self.pc += 2;
         }
     }
 
     fn op_sereg(&mut self, inst: u16) {
+        println!("sereg");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
@@ -117,13 +123,15 @@ impl Core {
     }
 
     fn op_ld(&mut self, inst: u16) {
+        println!("ld");
         let rx = ((inst & 0xf00) >> 8) as usize;
-        let val = inst & 0xff;
+        let val = (inst & 0xff) as u8;
 
-        self.registers[rx] = val as u8;
+        self.registers[rx] = val;
     }
 
     fn op_add(&mut self, inst: u16) {
+        println!("add");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let val = inst & 0xff;
 
@@ -133,6 +141,7 @@ impl Core {
     }
 
     fn op_ldreg(&mut self, inst: u16) {
+        println!("ldreg");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
@@ -140,20 +149,22 @@ impl Core {
     }
 
     fn op_or(&mut self, inst: u16) {
+        println!("or");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
-        let val = self.registers[rx] | self.registers[ry];
-        self.registers[rx] = val;
+        self.registers[rx] = self.registers[rx] | self.registers[ry];
     }
 
     fn op_and(&mut self, inst: u16) {
+        println!("and");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
         self.registers[rx] = self.registers[rx] & self.registers[ry];
     }
 
     fn op_xor(&mut self, inst: u16) {
+        println!("xor");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
@@ -162,16 +173,19 @@ impl Core {
     }
 
     fn op_addcarry(&mut self, inst: u16) {
+        println!("addcarry");
         let rx = ((inst & 0xf00) >> 8) as usize;
-        let val = inst & 0xff;
+        let ry = ((inst & 0xf0) >> 4) as usize;
 
-        let result = self.registers[rx] as u16 + val as u16;
+        let result = (self.registers[rx] as u16)
+            .wrapping_add(self.registers[ry] as u16);
 
         self.registers[rx] = (result & 0xff) as u8;
         self.registers[0xf] = ((result >> 8) & 0x1) as u8;
     }
 
     fn op_sub(&mut self, inst: u16) {
+        println!("sub");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
@@ -187,6 +201,7 @@ impl Core {
     }
 
     fn op_shr(&mut self, inst: u16) {
+        println!("shr");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         self.registers[0xf] = self.registers[rx] & 0x1;
@@ -194,6 +209,7 @@ impl Core {
     }
 
     fn op_subn(&mut self, inst: u16) {
+        println!("subn");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
@@ -208,6 +224,7 @@ impl Core {
     }
 
     fn op_shl(&mut self, inst: u16) {
+        println!("shl");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         self.registers[0xf] = (self.registers[rx] & 0x80) >> 7;
@@ -215,6 +232,7 @@ impl Core {
     }
 
     fn op_snereg(&mut self, inst: u16) {
+        println!("snereg");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
 
@@ -224,14 +242,17 @@ impl Core {
     }
 
     fn op_ldi(&mut self, inst: u16) {
+        println!("ldi");
         self.i = inst & 0xfff;
     }
 
     fn op_jp_offset(&mut self, inst: u16) {
+        println!("jp_offset");
         self.pc = (inst & 0xfff) + self.registers[0] as u16;
     }
 
     fn op_rnd(&mut self, inst: u16) {
+        println!("rnd");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let mask = (inst & 0xff) as u8;
 
@@ -240,6 +261,7 @@ impl Core {
     }
 
     fn op_drw(&mut self, inst: u16) {
+        println!("drw");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let ry = ((inst & 0xf0) >> 4) as usize;
         let n = inst & 0xf;
@@ -256,7 +278,9 @@ impl Core {
             let y_idx = (y as u16 + offset) as usize;;
             let sprite_byte = self.memory[(self.i + offset) as usize];
             let mask = (0xff >> remainder_bits) as u8;
-            let idx = (SCREEN_Y) * (cur_idx % (SCREEN_X / 8)) + (y_idx % SCREEN_Y);
+            let idx = (SCREEN_Y) * (cur_idx) + (y_idx);
+
+            println!("{}, {}", cur_idx, y_idx);
 
             if self.frame_buffer[idx] & mask > 0 {
                 self.registers[0xf] = self.registers[0xf] | 0x1;
@@ -274,7 +298,7 @@ impl Core {
                 };
 
                 let ovf_mask = 0xff << remainder_bits;
-                let idx = (SCREEN_Y) * (ovf_idx % (SCREEN_X / 8)) + (y_idx % SCREEN_Y);
+                let idx = (SCREEN_Y) * (ovf_idx) + (y_idx);
 
                 if (self.frame_buffer[idx] & ovf_mask) > 0 {
                     self.registers[0xf] = self.registers[0xf] | 0x1;
@@ -283,11 +307,11 @@ impl Core {
                 let overflow = self.frame_buffer[idx] ^ (sprite_byte << (8 - remainder_bits));
                 self.frame_buffer[idx] = overflow;
             }
-
         }
     }
 
     fn op_skp(&mut self, inst: u16) {
+        println!("skp");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         // TODO: Check key pressed
@@ -297,6 +321,7 @@ impl Core {
     }
 
     fn op_sknp(&mut self, inst: u16) {
+        println!("sknp");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         // TODO: Check key pressed
@@ -306,12 +331,14 @@ impl Core {
     }
 
     fn op_ldreg_dt(&mut self, inst: u16) {
+        println!("ldreg_dt");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         self.registers[rx] = self.dt
     }
 
     fn op_ldreg_key(&mut self, inst: u16) {
+        println!("ldreg_key");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         // TODO: Get key
@@ -319,30 +346,35 @@ impl Core {
     }
 
     fn op_lddt_reg(&mut self, inst: u16) {
+        println!("lddt_reg");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         self.dt = self.registers[rx];
     }
 
     fn op_ldst_reg(&mut self, inst: u16) {
+        println!("ldst_reg");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         self.st = self.registers[rx];
     }
 
     fn op_addi_reg(&mut self, inst: u16) {
+        println!("addi_reg");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
-        self.i = self.i + self.registers[rx] as u16;
+        self.i += self.registers[rx] as u16;
     }
 
     fn op_ldf(&mut self, inst: u16) {
+        println!("ldf");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         self.i = self.registers[rx] as u16 * 5;
     }
 
     fn op_ldb(&mut self, inst: u16) {
+        println!("ldb");
         let rx = ((inst & 0xf00) >> 8) as usize;
         let mut val = self.registers[rx];
 
@@ -354,20 +386,20 @@ impl Core {
     }
 
     fn op_ldreg_mem(&mut self, inst: u16) {
+        println!("ldreg_mem");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         for i in 0..rx {
-            self.memory[self.i as usize] = self.registers[i];
-            self.i += 1
+            self.memory[(self.i + i as u16) as usize] = self.registers[i];
         }
     }
 
     fn op_ldmem_reg(&mut self, inst: u16) {
+        println!("ldmem_reg");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
         for i in 0..rx {
-            self.registers[i] = self.memory[self.i as usize];
-            self.i += 1
+            self.registers[i] = self.memory[(self.i + i as u16) as usize];
         }
     }
 
@@ -433,7 +465,7 @@ impl Core {
 
     fn fetch(&mut self) -> u16 {
         let result: u16 = (self.memory[self.pc as usize] as u16) << 8 | self.memory[self.pc as usize + 1] as u16;
-        println!("Fetch[0x{:04x}]: 0x{:04x}",  self.pc, result);
+        print!("Fetch[0x{:04x}]: 0x{:04x} | ",  self.pc, result);
 
         self.pc += 2;
         result
