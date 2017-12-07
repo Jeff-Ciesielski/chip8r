@@ -27,6 +27,7 @@ pub struct Core {
     memory: [u8; 0x1000],
     registers: [u8; 0x10],
     stack: [u16; 0x10],
+    keys: [bool; 0x10],
     sp: u8,
     i: u16,
     pc: u16,
@@ -36,16 +37,24 @@ pub struct Core {
 
 impl Core {
 
+    pub fn set_key(&mut self, key_id: usize) {
+        self.keys[key_id] = true;
+    }
+
+    pub fn clear_key(&mut self, key_id: usize) {
+        self.keys[key_id] = false;
+    }
+
     pub fn load_rom(&mut self, rom: &Vec<u8>) {
         println!("Loading Rom");
-        for (i, elem) in rom.iter().enumerate() {
-            self.memory[0x200 + i] = *elem;
+        for i in 0..rom.len() {
+            self.memory[0x200 + i] = rom[i];
         }
     }
 
     fn load_sprites(&mut self) {
-        for (i, val) in CHAR_SPRITES.iter().enumerate() {
-            self.memory[i] = *val;
+        for i in 0..CHAR_SPRITES.len() {
+            self.memory[i] = CHAR_SPRITES[i];
         }
     }
 
@@ -55,6 +64,7 @@ impl Core {
             memory: [0u8; 0x1000],
             registers: [0u8; 0x10],
             stack: [0u16; 0x10],
+            keys: [false; 0x10],
             sp: 0,
             i: 0,
             pc: 0x200,
@@ -68,8 +78,8 @@ impl Core {
 
     fn op_cls(&mut self, _inst: u16) {
         println!("Clearing Screen");
-        for (_, elem) in self.frame_buffer.iter_mut().enumerate() {
-            *elem = 0;
+        for i in 0..self.frame_buffer.len() - 1 {
+            self.frame_buffer[i] = 0;
         }
     }
 
@@ -291,6 +301,8 @@ impl Core {
 
             // Handle being on the edge of a sprite
             if remainder_bits > 0 {
+                // Note the modulus here, if we're on the edge of the
+                // screen, we just wrap to the other side
                 let ovf_idx = (cur_idx + 1) % (SCREEN_X / 8);
                 let ovf_mask = 0xff << remainder_bits;
                 let idx = (SCREEN_Y) * (ovf_idx) + (y_idx);
@@ -309,9 +321,9 @@ impl Core {
     fn op_skp(&mut self, inst: u16) {
         println!("skp");
         let rx = ((inst & 0xf00) >> 8) as usize;
+        let key = self.registers[rx] as usize;
 
-        // TODO: Check key pressed
-        if false {
+        if self.keys[key] {
             self.pc += 2;
         }
     }
@@ -319,9 +331,10 @@ impl Core {
     fn op_sknp(&mut self, inst: u16) {
         println!("sknp");
         let rx = ((inst & 0xf00) >> 8) as usize;
+        let key = self.registers[rx] as usize;
 
         // TODO: Check key pressed
-        if true {
+        if !self.keys[key] {
             self.pc += 2;
         }
     }
