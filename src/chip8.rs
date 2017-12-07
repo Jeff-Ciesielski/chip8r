@@ -291,12 +291,13 @@ impl Core {
 
             // Handle being on the edge of the screen
             if remainder_bits > 0 {
-                let ovf_idx = if cur_idx == self.frame_buffer.len() - 1 {
+                let ovf_idx = if cur_idx == (SCREEN_X / 8) - 1 {
                     0
                 } else {
                     cur_idx + 1
                 };
 
+                println!("OVERFLOW: {}, {}", ovf_idx, y_idx);
                 let ovf_mask = 0xff << remainder_bits;
                 let idx = (SCREEN_Y) * (ovf_idx) + (y_idx);
 
