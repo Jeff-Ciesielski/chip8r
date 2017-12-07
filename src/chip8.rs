@@ -378,7 +378,7 @@ impl Core {
         let rx = ((inst & 0xf00) >> 8) as usize;
         let mut val = self.registers[rx];
 
-        for i in 0..2 {
+        for i in 0..3 {
             let digit = val % 10;
             val = val / 10;
             self.memory[(self.i + (2 - i)) as usize] = digit
@@ -389,7 +389,7 @@ impl Core {
         println!("ldreg_mem");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
-        for i in 0..rx {
+        for i in 0..rx + 1 {
             self.memory[(self.i + i as u16) as usize] = self.registers[i];
         }
     }
@@ -398,7 +398,7 @@ impl Core {
         println!("ldmem_reg");
         let rx = ((inst & 0xf00) >> 8) as usize;
 
-        for i in 0..rx {
+        for i in 0..rx + 1 {
             self.registers[i] = self.memory[(self.i + i as u16) as usize];
         }
     }
