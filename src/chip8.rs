@@ -282,31 +282,26 @@ impl Core {
 
             println!("{}, {}", cur_idx, y_idx);
 
-            if self.frame_buffer[idx] & mask > 0 {
-                self.registers[0xf] = self.registers[0xf] | 0x1;
+            if self.frame_buffer[idx] & mask != 0 {
+                println!("Collision!");
+                self.registers[0xf] |= 0x1;
             }
 
-            let primary = self.frame_buffer[idx] ^ (sprite_byte >> remainder_bits);
-            self.frame_buffer[idx] = primary;
+            self.frame_buffer[idx] ^= sprite_byte >> remainder_bits;
 
-            // Handle being on the edge of the screen
+            // Handle being on the edge of a sprite
             if remainder_bits > 0 {
-                let ovf_idx = if cur_idx == (SCREEN_X / 8) - 1 {
-                    0
-                } else {
-                    cur_idx + 1
-                };
-
-                println!("OVERFLOW: {}, {}", ovf_idx, y_idx);
+                let ovf_idx = (cur_idx + 1) % (SCREEN_X / 8);
                 let ovf_mask = 0xff << remainder_bits;
                 let idx = (SCREEN_Y) * (ovf_idx) + (y_idx);
 
-                if (self.frame_buffer[idx] & ovf_mask) > 0 {
+                println!("OVERFLOW: {}, {}", ovf_idx, y_idx);
+
+                if (self.frame_buffer[idx] & ovf_mask) != 0 {
                     self.registers[0xf] = self.registers[0xf] | 0x1;
                 }
 
-                let overflow = self.frame_buffer[idx] ^ (sprite_byte << (8 - remainder_bits));
-                self.frame_buffer[idx] = overflow;
+                self.frame_buffer[idx] ^= sprite_byte << (8 - remainder_bits);
             }
         }
     }
